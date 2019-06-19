@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Batismo</string>
     <string name="action_settings">Settings</string>
+    <string name="tvCategoria">Tipo de nome</string>
+    <string name="tvQNomes">Quantidade</string>
+    <string-array name="nomes">
+        <item>Nomes</item>
+        <item>Senhor dos aneis</item>
+        <item>Game of thrones</item>
+        <item>Witcher</item>
+    </string-array>
 </resources>
