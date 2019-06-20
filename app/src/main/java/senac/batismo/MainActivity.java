@@ -8,12 +8,15 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.RecoverySystem;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Adapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -21,6 +24,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
 
+import senac.batismo.adapters.AdapterNome;
 import senac.batismo.models.GeraNomes;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
                     nomes.setTipo(spTipo.getSelectedItem().toString());
                     nomes.setQuantidade(Integer.parseInt(etQtd.getText().toString()));
                     nomes.setNomes();
+
+                    listaNomes.setAdapter(new AdapterNome(nomes.getNomes(),getBaseContext()));
+                    RecyclerView.LayoutManager layout = new LinearLayoutManager(getBaseContext(),RecyclerView.VERTICAL, false);
+                    listaNomes.addItemDecoration(new DividerItemDecoration(getBaseContext(),DividerItemDecoration.VERTICAL));
 
                 }
                 catch(Exception ex) {
