@@ -1,6 +1,7 @@
 package senac.batismo.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,7 +44,7 @@ public class AdapterNome extends RecyclerView.Adapter {
 
         viewHolder.tvNome.setText(nome.getPrimeiro());
         viewHolder.tvSobrenome.setText(nome.getUltimo());
-
+        viewHolder.foto.setImageResource(R.drawable.ic_launcher_foreground);
     }
 
     @Override

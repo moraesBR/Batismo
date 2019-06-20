@@ -54,10 +54,13 @@ public class MainActivity extends AppCompatActivity {
                     nomes.setQuantidade(Integer.parseInt(etQtd.getText().toString()));
                     nomes.setNomes();
 
+                    System.out.println(nomes.getNomes().toString());
+
                     listaNomes.setAdapter(new AdapterNome(nomes.getNomes(),getBaseContext()));
                     RecyclerView.LayoutManager layout = new LinearLayoutManager(getBaseContext(),RecyclerView.VERTICAL, false);
                     listaNomes.addItemDecoration(new DividerItemDecoration(getBaseContext(),DividerItemDecoration.VERTICAL));
 
+                    listaNomes.setLayoutManager(layout);
                 }
                 catch(Exception ex) {
                     Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
