@@ -2,36 +2,40 @@ package senac.batismo;
 
 import android.os.Bundle;
 
-import com.github.javafaker.Faker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.RecoverySystem;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Adapter;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.TreeSet;
 
 import senac.batismo.adapters.AdapterNome;
 import senac.batismo.models.GeraNomes;
+import senac.batismo.models.Nome;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Nome>> {
     protected static GeraNomes nomes;
-    EditText etQtd;
-    Spinner spTipo;
-    RecyclerView listaNomes;
+    protected EditText etQtd;
+    protected Spinner spTipo;
+    protected RecyclerView listaNomes;
+    protected ProgressBar loading;
+    protected LoaderManager loaderManager;
+
+    private static final int OPERATION_GERANOMES_LOADER = 15;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,24 +47,31 @@ public class MainActivity extends AppCompatActivity {
         etQtd = findViewById(R.id.etQtd);
         spTipo = findViewById(R.id.spTipo);
         listaNomes = findViewById(R.id.rvListaNomes);
-        nomes = new GeraNomes();
+        loading = findViewById(R.id.progressBar);
+        loading.setVisibility(View.GONE);
+
+        listaNomes.addItemDecoration(new DividerItemDecoration(getBaseContext(),DividerItemDecoration.VERTICAL));
+        listaNomes.setLayoutManager(new LinearLayoutManager(getBaseContext(),RecyclerView.VERTICAL, false));
+
+        loaderManager = getSupportLoaderManager();
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try{
+                    nomes = new GeraNomes();
                     nomes.setTipo(spTipo.getSelectedItem().toString());
                     nomes.setQuantidade(Integer.parseInt(etQtd.getText().toString()));
-                    nomes.setNomes();
 
-                    System.out.println(nomes.getNomes().toString());
+                    Loader<List<GeraNomes>> loader = loaderManager.getLoader(OPERATION_GERANOMES_LOADER);
 
-                    listaNomes.setAdapter(new AdapterNome(nomes.getNomes(),getBaseContext()));
-                    RecyclerView.LayoutManager layout = new LinearLayoutManager(getBaseContext(),RecyclerView.VERTICAL, false);
-                    listaNomes.addItemDecoration(new DividerItemDecoration(getBaseContext(),DividerItemDecoration.VERTICAL));
+                    if (loader == null) {
+                        loaderManager.initLoader(OPERATION_GERANOMES_LOADER, null, MainActivity.this);
+                    } else {
+                        loaderManager.restartLoader(OPERATION_GERANOMES_LOADER, null, MainActivity.this);
+                    }
 
-                    listaNomes.setLayoutManager(layout);
                 }
                 catch(Exception ex) {
                     Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -70,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -90,5 +102,35 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    */
+
+    public Loader<List<Nome>> onCreateLoader(int id, @Nullable Bundle args){
+        return new AsyncTaskLoader<List<Nome>>(this) {
+            @Nullable
+            @Override
+            public List<Nome> loadInBackground() {
+                nomes.setNomes();
+                return nomes.getNomes();
+            }
+            @Override
+            protected void onStartLoading(){
+                listaNomes.setVisibility(View.INVISIBLE);
+                loading.setVisibility(View.VISIBLE);
+                forceLoad();
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(@Nullable Loader<List<Nome>> loader, List<Nome> data){
+        loading.setVisibility(View.GONE);
+        listaNomes.setVisibility(View.VISIBLE);
+        listaNomes.setAdapter(new AdapterNome(data,getBaseContext()));
+    }
+
+    @Override
+    public void onLoaderReset(@Nullable Loader<List<Nome>> loader){
+
     }
 }

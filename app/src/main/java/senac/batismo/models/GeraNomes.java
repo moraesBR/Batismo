@@ -41,9 +41,10 @@ public class GeraNomes {
     }
 
     public void setNomes() {
-        Faker gerador = new Faker(new Locale("pt-BR"));
-
-        for(int i=0; i < quantidade; i++)
-            nomes.add(new Nome(tipo));
+        for(int i=0; i < quantidade; i++) {
+            Nome novo = new Nome(tipo);
+            novo.setNome();
+            nomes.add(novo);
+        }
     }
 }
