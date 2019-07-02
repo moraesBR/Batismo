@@ -5,6 +5,7 @@ import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -36,6 +38,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private static final int OPERATION_GERANOMES_LOADER = 15;
 
+    /* Cria chave para ser usada no onSavedInstanceState */
+    private static final String TIPO_TXT_KEY = "nomes";
+    private static final String QTD_TXT_KEY = "quantidade";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +56,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         listaNomes = findViewById(R.id.rvListaNomes);
         loading = findViewById(R.id.progressBar);
         loading.setVisibility(View.GONE);
+
+
+        if(savedInstanceState != null){
+            if(savedInstanceState.containsKey(TIPO_TXT_KEY))
+                spTipo.setSelection(savedInstanceState.getInt(TIPO_TXT_KEY));
+
+            if(savedInstanceState.containsKey(QTD_TXT_KEY))
+                etQtd.setSelection(savedInstanceState.getInt(QTD_TXT_KEY));
+        }
+
 
         listaNomes.addItemDecoration(new DividerItemDecoration(getBaseContext(),DividerItemDecoration.VERTICAL));
         listaNomes.setLayoutManager(new LinearLayoutManager(getBaseContext(),RecyclerView.VERTICAL, false));
@@ -79,6 +96,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 }
             }
         });
+    }
+
+    /* Salva as informações dos campos lidos */
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putInt(TIPO_TXT_KEY,spTipo.getSelectedItemPosition());
+        outState.putInt(QTD_TXT_KEY,Integer.parseInt(etQtd.getText().toString()));
     }
 
     /*
